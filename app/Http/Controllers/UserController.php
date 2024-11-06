@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use App\Mail\Notification;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -98,9 +98,9 @@ class UserController extends Controller
     public function store(Request $request)
     {
         if(!$request->ajax()) return redirect('/');
-        
+
         $password = Str::random(8);
-        
+
         $users=new User();
         $users->name=$request->name;
         $users->email=$request->email;
@@ -119,7 +119,8 @@ class UserController extends Controller
         $usersrela->idEmpresa=$idEmpresa; //cambios multiempresa
         $usersrela->save();
 
-        Mail::to($users->email)->send(new Notification($users->name, $users->email, $password));
+        //FIXME: reopen mailer
+        //Mail::to($users->email)->send(new Notification($users->name, $users->email, $password));
 
         return response()->json(['message' => 'Usuario creado y correo enviado.', 'user' => $users]);
     }
@@ -181,7 +182,7 @@ class UserController extends Controller
         // Elimina los roles asociados al usuario (solo si no es superadministrador)
         \DB::table('tb_usuario_tiene_rol')->where('idUser', $id)->delete();
 
-        
+
         $user->delete();
 
         return response()->json(['message' => 'Usuario y roles asociados eliminados correctamente'], 200);
@@ -189,11 +190,11 @@ class UserController extends Controller
 
     public function cambiarContrasena(Request $request)
     {
-    
+
         $request->validate([
             'newPassword' => 'required|min:8',
         ]);
-        
+
         $user = Auth::user();
 
         $user->password = Hash::make($request->newPassword);

@@ -29,7 +29,7 @@
                                         <select class="form-control col-md-3" v-model="criterio">
                                         <option value="producto">Producto</option>
                                         <option value="coleccion">Coleccion</option>
-                                        <!-- <option value="area">Area</option> -->
+                                        <option value="area">Area</option>
                                         </select>
                                         <input type="text" v-model="buscar" @keyup.enter="listarProducto(1,buscar,criterio)" class="form-control" placeholder="Texto a buscar">
                                         <button type="submit" @click="listarProducto(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
@@ -46,7 +46,7 @@
                                         <th>Foto</th>
                                         <th>Descripcion</th>
                                         <th>Coleccion</th>
-                                        <!-- <th>Area</th> -->
+                                        <th>Area</th>
                                         <th>Estado</th>
                                     </tr>
                                 </thead>
@@ -56,7 +56,7 @@
                                         <td>
                                             <button type="button" @click="abrirModal('producto','actualizar',producto)" class="btn btn-info btn-sm">
                                             <i class="icon-pencil"></i>
-                                            </button> 
+                                            </button>
 
                                         <template v-if="producto.estado">
                                             <button type="button" class="btn custom-button btn-sm" @click="desactivarProducto(producto.id)">
@@ -79,7 +79,7 @@
                                         <td><a class="cursor" v-on:click="showLightbox(`img/avatars/${producto.foto}`)">Ver producto</a></td>
                                         <td v-text="producto.descripcion"></td>
                                         <td v-text="producto.coleccion"></td>
-                                        <!-- <td v-text="producto.area"></td> -->
+                                        <td v-text="producto.area"></td>
                                         <td>
                                             <div v-if="producto.estado">
                                             <span class="badge badge-success">Activo</span>
@@ -122,8 +122,8 @@
                             </div>
                             <div class="modal-body">
                                 <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
-                                   
-                                        
+
+
                                         <div class="form-group row">
                                             <label class="col-md-3 form-control-label" for="text-input">Coleccion</label>
                                             <div class="col-md-9">
@@ -133,8 +133,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        
-                                        <!--
+
                                         <div class="col-md-6">
                                             <div class="form-group row">
                                                 <label class="col-md-3 form-control-label" for="text-input">Area</label>
@@ -146,8 +145,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        -->
-                                   
+
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Nombre</label>
                                         <div class="col-md-9">
@@ -388,7 +386,7 @@
                     'descripcion': this.descripcion,
                     'idColeccion': this.idColeccion,
                     'idArea': this.idArea,
-                    'capacidadMensual': this.capacidadMensual.replace(/\D/g, ""), 
+                    'capacidadMensual': this.capacidadMensual.replace(/\D/g, ""),
                     'presentacion': this.presentacion
                     //'dato': this.dato
                 }).then(function (response) {
@@ -400,12 +398,12 @@
                 });
             },
             formatCapacidad(event) {
-                let value = event.target.value.replace(/\D/g, ""); 
-                if (value.length > 9) { 
+                let value = event.target.value.replace(/\D/g, "");
+                if (value.length > 9) {
                     value = value.slice(0, 9);
                 }
                 if (value !== "") {
-                    value = parseInt(value).toLocaleString('es-CO'); 
+                    value = parseInt(value).toLocaleString('es-CO');
                 }
                 event.target.value = value;
                 this.capacidadMensual = value;
@@ -528,7 +526,7 @@
                                         'El producto ha sido eliminado correctamente.',
                                         'success'
                                     );
-                                    
+
                                     this.listarProducto(this.pagination.currentPage, this.buscar, this.criterio);
                                 } else {
                                     Swal.fire(
@@ -603,7 +601,7 @@
                             this.tipoAccion= 1;
                             this.idColeccion= 1;
                             this.idArea= 1;
-                            this.capacidadMensual = ''; 
+                            this.capacidadMensual = '';
                             break;
                         }
                         case 'actualizar':{
@@ -708,7 +706,7 @@
         border-radius: 8px;
     }
     .custom-button {
-        background-color: #ff9900; 
-        color: #ffffff; 
+        background-color: #ff9900;
+        color: #ffffff;
     }
 </style>

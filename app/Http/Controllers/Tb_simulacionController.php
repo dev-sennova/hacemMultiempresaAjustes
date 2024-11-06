@@ -138,7 +138,10 @@ class Tb_simulacionController extends Controller
         $tb_concepto_cif_simula0->idSimulacion=$idSimulacion;
         $tb_concepto_cif_simula0->save();
 
-        $conceptoscif = DB::table('tb_concepto_cif')->where('tb_concepto_cif.estado', '=', '1')->get();
+        $conceptoscif = DB::table('tb_concepto_cif')
+        ->where('tb_concepto_cif.estado', '=', '1')
+        ->where('tb_concepto_cif.idEmpresa','=',$idEmpresa)
+        ->get();
         foreach ($conceptoscif as $conceptocif) {
             $concepto=$conceptocif->concepto;
             $valor=$conceptocif->valor;
@@ -149,6 +152,7 @@ class Tb_simulacionController extends Controller
             $tb_concepto_cif_simula->save();
         }
 
+        //TBD - FIXME:Relation is over idProducto and not over idHoja
         $productos = DB::table('tb_rela_simulacion')->where('tb_rela_simulacion.idSimulacion', '=', $idSimulacion)->get();
         foreach ($productos as $producto) {
             $idProducto=$producto->idProducto;
