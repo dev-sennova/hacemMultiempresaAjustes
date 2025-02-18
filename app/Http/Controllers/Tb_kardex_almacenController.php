@@ -192,6 +192,7 @@ class Tb_kardex_almacenController extends Controller
 
         //if(!$request->ajax()) return redirect('/');
         $identificador=$request->material;
+        if (Tb_kardex_almacen::count()>0) {
         $preciomaterial = Tb_kardex_almacen::first()
         ->select('tb_kardex_almacen.id','tb_kardex_almacen.precioSaldos as valorMaterial')
         ->where('tb_kardex_almacen.idEmpresa','=',$idEmpresa)
@@ -211,6 +212,12 @@ class Tb_kardex_almacenController extends Controller
             'id' => $id,
             'valorMaterial' =>  $valorMaterial
         ];
+        } else {
+            return [
+            'id' => 0,
+            'valorMaterial' =>  0
+        ];
+        }
     }
     public function preciomaterialcompra(Request $request) //DATOS de valor segun compra traigo segun idmateria el valor de compra del kardex
     {

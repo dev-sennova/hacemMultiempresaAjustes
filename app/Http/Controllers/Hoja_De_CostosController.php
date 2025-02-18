@@ -7,7 +7,7 @@ use App\Tb_mano_de_obra_producto;
 use App\Tb_gestion_materia_prima;
 use App\Tb_proceso;
 use App\Tb_simulacion;
-use App\tb_hoja_de_costo;
+use App\Tb_hoja_de_costo;
 use App\Tb_concepto_cif;
 use App\Tb_maquinaria;
 use App\Tb_producto;
@@ -120,11 +120,11 @@ class Hoja_De_CostosController extends Controller
             }
 
             //capacidadproduccion
-            $productos=tb_hoja_de_costo::where('id','=',$identificador)->select('capacidadMensual')->first();
+            $productos=Tb_hoja_de_costo::where('id','=',$identificador)->select('capacidadMensual')->first();
             $capacidadmensual = $productos->capacidadMensual;
             $capacidadproducto = $capacidadproducto+$capacidadmensual;
 
-            $capacidades = tb_hoja_de_costo::where('estado','=','1')
+            $capacidades = Tb_hoja_de_costo::where('estado','=','1')
             ->select('capacidadMensual')->get();
             foreach($capacidades as $capacidad){
                 $acumuladocapacidad = $capacidad->capacidadMensual + $acumuladocapacidad;
@@ -504,8 +504,16 @@ public function unitarioTotalGen(Request $request)
     $productos = Tb_producto::join('tb_hoja_de_costo','tb_producto.id','=','tb_hoja_de_costo.idProducto')
     ->select('tb_producto.producto as producto','tb_producto.referencia as referencia','tb_producto.foto as foto','tb_producto.presentacion as presentacion',
     'tb_hoja_de_costo.capacidadMensual as capacidadMensual')
-    ->where('tb_producto.id','=',$identificador)
+    ->where('tb_hoja_de_costo.id','=',$identificador)
     ->get();
+    
+    $unidadesprod = 1;
+    $referenciap = '--';
+    $nombrep = '';
+    $fotop='';
+    $presentacion='';
+    
+    
 
     foreach($productos as $producto){
         $nombrep = $producto->producto;
