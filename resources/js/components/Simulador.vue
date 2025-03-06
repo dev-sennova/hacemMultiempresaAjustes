@@ -202,14 +202,14 @@
                                     <div v-if="tipoModal==2" class="form-group row">
                                         <label class="col-md-3 form-control-label" for="email-input">Tiempo</label>
                                         <div class="col-md-9">
-                                            <input type="text" step="0.01" v-model="tiempo" class="form-control" placeholder="Tiempo estandar de mano de obra" @input="soloNumerosTiempo">
+                                            <input type="text" step="0.01" v-model="tiempo" class="form-control" placeholder="Tiempo estandar de mano de obra" @input="soloNumerosConDecimales">
                                             <span class="help-block">(*) Ingrese el tiempo de mano de obra en horas</span>
                                         </div>
                                     </div>
                                      <div v-if="tipoModal==4" class="form-group row">
                                         <label class="col-md-3 form-control-label" for="email-input">Tiempo</label>
                                         <div class="col-md-9">
-                                            <input type="text" step="0.01" v-model="tiempo" class="form-control" placeholder="Tiempo estandar de mano de obra" @input="soloNumerosTiempo">
+                                            <input type="text" step="0.01" v-model="tiempo" class="form-control" placeholder="Tiempo estandar de mano de obra" @input="soloNumerosConDecimales">
                                             <span class="help-block">(*) Ingrese el tiempo de mano de obra en horas</span>
                                         </div>
                                     </div>
@@ -222,7 +222,7 @@
                                     <!-- Si el tipo es 3 solo es modal para mostrar carga -->
 
                                     <div v-if="tipoModal==3" class="carga">
-                                        <p><hr><h1>Generando, por favor espere...</h1><hr></p>
+                                        <p><hr><h1>Generando, por favor espere...</h1></hr></p>
                                     </div>
                                 </form>
                             </div>
@@ -376,6 +376,20 @@
                             });
                     }
                 });
+            },
+            soloNumerosConDecimales(event) {
+                const input = event.target.value;
+                const regex = /^\d*\.?\d*$/; // Permite cualquier cantidad de dígitos
+
+                if (!regex.test(input)) {
+                    event.target.value = input.slice(0, -1);
+                }
+
+                if (input.length > 0 && input.charAt(0) === '0') {
+                    event.target.value = input.slice(1); // Eliminar el primer carácter si es 0
+                }
+
+                this.unidades = event.target.value;
             },
             soloNumeros(event) {
                 const input = event.target.value;

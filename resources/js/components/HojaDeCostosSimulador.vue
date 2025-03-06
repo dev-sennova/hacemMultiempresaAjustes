@@ -27,8 +27,8 @@
                                         <td>{{total.unidades}}</td>
                                         <td>{{total.tiempo | redondeodec}}</td>
                                         <td>{{total.tiempo*total.unidades | redondeo}}</td>
-                                        <td>{{total.tiempo*total.unidades*valorbase | redondeo | currency}}</td>
-                                        <td>{{total.tiempo*valorbase | redondeo | currency}}</td>
+                                        <td>{{total.tiempo*total.unidades*Number(valorbase) | redondeo | currency}}</td>
+                                        <td>{{total.tiempo*Number(valorbase) | redondeo | currency}}</td>
                                         <td>
                                             <button type="button" class="btn btn-success btn-sm" @click="abrirModal(total)">
                                                 <i class="icon-magnifier"></i><span> Ver</span>
