@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call(AprendizSeeder::class);
 
 //-------------------------------------------------------------------//
         //primero vacia la tabla y luego la llena ojo

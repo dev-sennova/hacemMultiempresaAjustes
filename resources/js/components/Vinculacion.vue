@@ -259,18 +259,24 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group row" v-if="flag==1">
-                                        <label class="col-md-3 form-control-label" for="text-input">Salario Base</label>
-                                        <div class="col-md-9">
-                                            <input type="number" v-model="salarioBasicoMensual" class="form-control" placeholder="Ingrese el salario básico mensual">
-                                            <span class="help-block">(*) Ingrese el salario básico mensual</span>
-                                        </div>
-                                    </div>
-
+                                    <div class="form-group row" v-if="flag == 1"> 
+                                        <label class="col-md-3 form-control-label" for="text-input">Salario Base</label> 
+                                        <div class="col-md-9"> 
+                                        <input 
+                                            type="text" 
+                                            v-model="salarioBasicoMensual" 
+                                            class="form-control" 
+                                            placeholder="Ingrese el salario básico mensual" 
+                                            @input="formatMoney" 
+                                        /> 
+                                        <span class="help-block">(*) Ingrese el salario básico mensual</span> 
+                                        </div> 
+                                        </div> 
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Fecha de Inicio</label>
                                         <div class="col-md-9">
-                                            <input type="date" v-model="fechaInicio" class="form-control" placeholder="Ingrese la fecha de inicio">
+                                            <input type="date" v-model="fechaInicio" class="form-control" 
+                                            :max ="maxFecha" :min="minFecha"placeholder="Ingrese la fecha de inicio">
                                             <span class="help-block">(*) Ingrese fecha de inicio</span>
                                         </div>
                                     </div>
@@ -323,9 +329,11 @@
                 idNivelArl:0,
                 idEps:0,
                 idPensiones:0,
-                salarioBasicoMensual:0,
+                salarioBasicoMensual:"",
                 id:'',
-                fechaInicio:'',
+                fechaInicio:moment().format('YYYY-MM-DD'),
+                maxFecha: moment().format('YYYY-MM-DD'),
+                minFecha: '1900-01-01',
                 estado:'',
                 arrayVinculaciones : [],
                 arrayVinculacionesInactivas : [],
@@ -481,6 +489,28 @@
                     console.log(error);
                 });
             },
+            formatMoney(event) {
+                let value = event.target.value.replace(/\D/g, ""); 
+                if (value.length > 9) { 
+                    value = value.slice(0, 9);
+                }
+                if (value !== "") {
+                    value = parseInt(value).toLocaleString('es-CO', {
+                    style: 'currency',
+                    currency: 'COP',
+                    minimumFractionDigits: 0
+                    });
+                }
+                event.target.value = value;
+                this.salarioBasicoMensual = value;
+            },
+                validarFecha() {
+                    const fecha = moment(this.fechaInicio, 'YYYY-MM-DD', true);
+                    if (!fecha.isValid() || this.fechaInicio.length !== 10) {
+                        this.fechaInicio = moment().format('YYYY-MM-DD'); // Restablecer a hoy
+                        Swal.fire('Error', 'Ingrese una fecha válida', 'error');
+                    }
+                },
             editarVinculacion(){
                 if(this.validarVinculacion()){
                     return;

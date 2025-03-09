@@ -648,7 +648,7 @@
             },
             selectRelacion(idArea){
                 let me=this;
-                var url='/perfil/selectRelacion/'+this.idArea;
+                var url='/perfil/selectRelacion/'+ this.idArea;
                 axios.get(url).then(function (response) {
                 var respuesta=response.data;
                 me.arrayRelacion=respuesta.relaciones;

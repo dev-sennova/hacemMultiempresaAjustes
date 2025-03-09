@@ -105,8 +105,8 @@ class Tb_perfilController extends Controller
         //cambios multiempresa
 
         $perfiles = tb_perfil::join("tb_proceso","tb_proceso.id","=","tb_perfil.idProceso")
-        ->where('tb_proceso.idEmpresa','=',$idEmpresa)
-        ->all();
+        // ->where('tb_proceso.idEmpresa','=',$idEmpresa)
+        ->get();
         return ['perfiles' => $perfiles];
         }
 

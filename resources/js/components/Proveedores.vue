@@ -186,6 +186,7 @@
         data(){
             return{
                 idProveedor:0,
+                emailError: '',
                 id:'',
                 nit:0,
                 razonSocial:'',

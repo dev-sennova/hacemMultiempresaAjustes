@@ -98,7 +98,13 @@
                                             <br><span class="help-block">(*) Ingrese el costo de producción - (De hoja: {{this.valorpar}}))</span>
                                         </div>
                                     </div>
-
+                                    <!-- <div class="form-group row">
+                                        <label class="col-md-3 form-control-label" for="text-input">Valor mensual</label>
+                                        <div class="col-md-9">
+                                            <input type="text" v-model="valor" class="form-control" placeholder="Valor de el concepto" @input="formatMoney">
+                                            <span class="help-block">(*) Ingrese el valor mensual del concepto</span>
+                                        </div>
+                                    </div> -->
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Margen</label>
                                         <div class="col-md-9">
