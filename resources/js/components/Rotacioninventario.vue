@@ -54,11 +54,11 @@
                                         <td v-text="precio.detalle"></td>
                                         <td v-text="precio.fechainicial"></td>
                                         <td v-text="precio.fechafinal"></td>
-                                        <td v-text="precio.saldoperiodoactual"></td>
-                                        <td v-text="precio.saldoperiodoanterior"></td>
-                                        <td v-text="precio.costodeventas"></td>
-                                        <td v-text="precio.sumasaldos"></td>
-                                        <td v-text="precio.promediosaldos"></td>
+                                        <td>{{ formatoCOP(precio.saldoperiodoactual) }}</td>
+                                        <td>{{ formatoCOP(precio.saldoperiodoanterior) }}</td>
+                                        <td>{{ formatoCOP(precio.costodeventas) }}</td>
+                                        <td>{{ formatoCOP(precio.sumasaldos) }}</td>
+                                        <td>{{ formatoCOP(precio.promediosaldos) }}</td>
                                         <td v-text="precio.rotacioninventario"></td>
                                         <td v-if="precio.tipoperiodo==1">Mensual</td>
                                         <td v-if="precio.tipoperiodo==2">Diario</td>
@@ -124,7 +124,14 @@
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Saldo periodo actual</label>
                                         <div class="col-md-9">
-                                            <input type="text" v-model="saldoperiodoactual" class="form-control" placeholder="Saldo periodo actual">
+                                            <input
+                                                type="text"
+                                                v-model="saldoperiodoactualFormateado"
+                                                @input="formatearMoneda('saldoperiodoactualFormateado', 'saldoperiodoactual')"
+                                                class="form-control"
+                                                placeholder="Saldo periodo actual"
+                                            />
+
                                             <span class="help-block">(*) Ingrese el valor del saldo periodo actual</span>
                                         </div>
                                     </div>
@@ -132,21 +139,35 @@
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Saldo periodo anterior</label>
                                         <div class="col-md-9">
-                                            <input type="text" v-model="saldoperiodoanterior" class="form-control" placeholder="Saldo periodo anterior">
+                                            <input
+                                                type="text"
+                                                v-model="saldoperiodoanteriorFormateado"
+                                                @input="formatearMoneda('saldoperiodoanteriorFormateado', 'saldoperiodoanterior')"
+                                                class="form-control"
+                                                placeholder="Saldo periodo anterior"
+                                            />
                                             <span class="help-block">(*) Ingrese el valor del saldo periodo anterior</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Costo de ventas</label>
                                         <div class="col-md-9">
-                                            <input type="text" v-model="costodeventas" class="form-control" placeholder="Costo de ventas">
+                                            <input
+                                                type="text"
+                                                v-model="costodeventasFormateado"
+                                                @input="formatearMoneda('costodeventasFormateado', 'costodeventas')"
+                                                class="form-control"
+                                                placeholder="Costo de ventas"
+                                            />
                                             <span class="help-block">(*) Ingrese el valor del costo de ventas</span>
                                         </div>
                                     </div>
-
                                     <div class="form-group row">
-                                        <label for="puntoequilibriopesos">Suma saldos: {{ parseInt(parseInt(saldoperiodoactual)+parseInt(saldoperiodoanterior)) }}</label>
+                                        <label for="puntoequilibriopesos">
+                                            Suma saldos: {{ parseInt(saldoperiodoactual || 0) + parseInt(saldoperiodoanterior || 0) }}
+                                        </label>
                                     </div>
+
                                     <div class="form-group row">
                                         <label for="puntoequilibriopesos">Promedio saldos: {{ parseInt(parseInt(parseInt(saldoperiodoactual)+parseInt(saldoperiodoanterior))/2) }}</label>
                                     </div>
@@ -191,6 +212,10 @@
                 flag: 0,
                 saldoperiodoactual:0,
                 saldoperiodoanterior:0,
+                //datos que reciben monedas
+                saldoperiodoactualFormateado: '',
+                saldoperiodoanteriorFormateado: '',
+                costodeventasFormateado: '',
                 fechainicial:'',
                 fechafinal:'',
                 costodeventas:0,
@@ -264,6 +289,22 @@
                 .catch(function (error) {
                     console.log(error);
                 });
+            },
+            formatearMoneda(campoFormateado, campoReal) {
+                let valor = this[campoFormateado].replace(/[^\d]/g, '');
+                this[campoReal] = parseFloat(valor);
+                this[campoFormateado] = new Intl.NumberFormat('es-CO', {
+                    style: 'currency',
+                    currency: 'COP',
+                    minimumFractionDigits: 0
+                }).format(this[campoReal]);
+            },
+            formatoCOP(valor) {
+                return new Intl.NumberFormat('es-CO', {
+                    style: 'currency',
+                    currency: 'COP',
+                    minimumFractionDigits: 0
+                }).format(valor || 0);
             },
             listarRotacioninventario(page){
                 let me=this;

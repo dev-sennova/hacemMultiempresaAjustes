@@ -238,6 +238,7 @@
                 detalle:'',
                 registro:'',
                 idProducto: 0,
+                idRelacion: '',
                 gastosfijos: 0,
                 unidades:'',
                 tiempo:'',

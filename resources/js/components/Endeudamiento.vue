@@ -48,15 +48,15 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="precio in arrayPrecios" :key="precio.id">
-                                        <td v-text="precio.detalle"></td>
-                                        <td v-text="precio.activototal"></td>
-                                        <td v-text="precio.pasivototal"></td>
-                                        <td v-text="precio.pasivocorriente"></td>
-                                        <td v-text="precio.patrimoniototal"></td>
-                                        <td v-text="precio.endeudamientototal"></td>
-                                        <td v-text="precio.leverage"></td>
-                                        <td v-text="precio.cortoplazo"></td>
-                                    </tr>
+    <td>{{ precio.detalle }}</td>
+    <td>{{ formatoMoneda(precio.activototal) }}</td>
+    <td>{{ formatoMoneda(precio.pasivototal) }}</td>
+    <td>{{ formatoMoneda(precio.pasivocorriente) }}</td>
+    <td>{{ formatoMoneda(precio.patrimoniototal) }}</td>
+    <td>{{ formatoPorcentaje(precio.endeudamientototal) }}</td>
+    <td>{{ formatoPorcentaje(precio.leverage) }}</td>
+    <td>{{ formatoPorcentaje(precio.cortoplazo) }}</td>
+</tr>
                                 </tbody>
                             </table>
                             </div>
@@ -91,7 +91,13 @@
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Activo total</label>
                                         <div class="col-md-9">
-                                            <input type="text" v-model="activototal" class="form-control" placeholder="Activo total">
+                                            <input
+                                                type="text"
+                                                :value="formatoMoneda(activototal)"
+                                                @input="actualizarMoneda($event, 'activototal')"
+                                                class="form-control"
+                                                placeholder="Activo total"
+                                            >
                                             <span class="help-block">(*) Ingrese el valor del activo total</span>
                                         </div>
                                     </div>
@@ -99,21 +105,39 @@
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Pasivo corriente</label>
                                         <div class="col-md-9">
-                                            <input type="text" v-model="pasivocorriente" class="form-control" placeholder="Pasivo corriente">
-                                            <span class="help-block">(*) Ingrese el valor del pasivo corriente</span>
+                                            <input
+                                                type="text"
+                                                :value="formatoMoneda(pasivocorriente)"
+                                                @input="actualizarMoneda($event, 'pasivocorriente')"
+                                                class="form-control"
+                                                placeholder="Pasivo corriente"
+                                            >
+                                                <span class="help-block">(*) Ingrese el valor del pasivo corriente</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Pasivo total</label>
                                         <div class="col-md-9">
-                                            <input type="text" v-model="pasivototal" class="form-control" placeholder="Pasivo total">
+                                            <input
+                                                type="text"
+                                                :value="formatoMoneda(pasivototal)"
+                                                @input="actualizarMoneda($event, 'pasivototal')"
+                                                class="form-control"
+                                                placeholder="Pasivo total"
+                                            >
                                             <span class="help-block">(*) Ingrese el valor del pasivo total</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Patrimonio total</label>
                                         <div class="col-md-9">
-                                            <input type="text" v-model="patrimoniototal" class="form-control" placeholder="Patrimonio total">
+                                            <input
+                                                type="text"
+                                                :value="formatoMoneda(patrimoniototal)"
+                                                @input="actualizarMoneda($event, 'patrimoniototal')"
+                                                class="form-control"
+                                                placeholder="Patrimonio total"
+                                            >
                                             <span class="help-block">(*) Ingrese el valor del patrimonio total</span>
                                         </div>
                                     </div>
@@ -227,6 +251,23 @@
                     console.log(error);
                 });
             },
+            formatoMoneda(valor) {
+                if (!valor && valor !== 0) return '';
+                return new Intl.NumberFormat('es-CO', {
+                    style: 'currency',
+                    currency: 'COP',
+                    minimumFractionDigits: 0
+                }).format(valor);
+            },
+            actualizarMoneda(event, campo) {
+                const valor = event.target.value.replace(/\D/g, ''); // Elimina todo lo que no sea número
+                this[campo] = parseInt(valor || 0);
+            },
+            formatoPorcentaje(valor) {
+                if (!valor && valor !== 0) return '0.00 %';
+                return parseFloat(valor).toFixed(2) + ' %';
+            },
+
             listarEndeudamiento(page){
                 let me=this;
                 var url='/simulaciones/listarEndeudamiento?page=' + page;
@@ -264,6 +305,7 @@
                 this.listarEndeudamiento(1);
             }
         },
+
         mounted() {
             this.listarEndeudamiento();
         }

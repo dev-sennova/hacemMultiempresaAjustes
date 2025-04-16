@@ -92,14 +92,15 @@
                             <nav>
                                 <ul class="pagination">
                                     <li class="page-item" v-if="pagination.current_page > 1">
-                                        <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page - 1,buscar,criterio)">Ant</a>
+                                        <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page - 1)">Ant</a>
                                     </li>
                                     <li class="page-item" v-for="page in pagesNumber" :key="page" :class="[page == isActived ? 'active' : '']">
-                                        <a class="page-link" href="#" @click.prevent="cambiarPagina(page,buscar,criterio)" v-text="page"></a>
+                                        <a class="page-link" href="#" @click.prevent="cambiarPagina(page)" v-text="page"></a>
                                     </li>
                                     <li class="page-item" v-if="pagination.current_page < pagination.last_page">
-                                        <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page + 1,buscar,criterio)">Sig</a>
+                                        <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page + 1)">Sig</a>
                                     </li>
+
                                 </ul>
                             </nav>
                         </div>
@@ -184,7 +185,7 @@
                                 </tbody>
                             </table>
                             </div>
-                            <nav>
+                            <!-- <nav>
                                 <ul class="pagination">
                                     <li class="page-item" v-if="pagination.current_page > 1">
                                         <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page - 1,buscar,criterio)">Ant</a>
@@ -196,7 +197,7 @@
                                         <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page + 1,buscar,criterio)">Sig</a>
                                     </li>
                                 </ul>
-                            </nav>
+                            </nav> -->
                         </div>
                     </div>
                     </vs-tab>
@@ -259,19 +260,20 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group row" v-if="flag == 1"> 
-                                        <label class="col-md-3 form-control-label" for="text-input">Salario Base</label> 
-                                        <div class="col-md-9"> 
+                                    <div class="form-group row" v-if="flag == 1">
+                                        <label class="col-md-3 form-control-label" for="text-input">Salario Base</label>
+                                        <div class="col-md-9">
                                         <input 
                                             type="text" 
-                                            v-model="salarioBasicoMensual" 
+                                            v-model="salarioFormateado" 
                                             class="form-control" 
                                             placeholder="Ingrese el salario básico mensual" 
                                             @input="formatMoney" 
-                                        /> 
-                                        <span class="help-block">(*) Ingrese el salario básico mensual</span> 
-                                        </div> 
-                                        </div> 
+                                            @blur="parseToNumber"
+                                        />
+                                        <span class="help-block">(*) Ingrese el salario básico mensual</span>
+                                        </div>
+                                    </div>
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Fecha de Inicio</label>
                                         <div class="col-md-9">
@@ -329,7 +331,8 @@
                 idNivelArl:0,
                 idEps:0,
                 idPensiones:0,
-                salarioBasicoMensual:"",
+                salarioBasicoMensual:0,
+                salarioFormateado:"",
                 id:'',
                 fechaInicio:moment().format('YYYY-MM-DD'),
                 maxFecha: moment().format('YYYY-MM-DD'),
@@ -348,13 +351,13 @@
                 errorMensaje : [],
                 pagination : {
                     'total' : 0,
-                    'current_page' : 0,
-                    'per_page' : 0,
-                    'last_page' : 0,
+                    'current_page' : 1,
+                    'per_page' : 10,
+                    'last_page' : 1,
                     'from' : 0,
                     'to' : 0,
                 },
-                offset : 3,
+                offset : 2,
                 criterio : 'vinculacion',
                 buscar : ''
             }
@@ -364,30 +367,23 @@
                 return this.pagination.current_page;
             },
             //Calcula los elementos de la paginacion
-            pagesNumber: function(){
-                if (this.pagination.to) {
-                    return[];
+            pagesNumber() {
+                if (!this.pagination || !this.pagination.last_page) {
+                    return [];
                 }
 
-                var from=this.pagination.current_page - this.offset;
-                if (from < 1) {
-                    from = 1;
-                }
+                let from = Math.max(1, this.pagination.current_page - this.offset);
+                let to = Math.min(this.pagination.last_page, from + this.offset * 2);
 
-                var to = from + (this.offset * 2);
-                if (to >= this.pagination.last_page) {
-                    to = this.pagination.last_page;
-                }
-
-                var pagesArray = [];
-                while (from <= to) {
-                    pagesArray.push(from);
-                    from++;
+                let pagesArray = [];
+                for (let i = from; i <= to; i++) {
+                    pagesArray.push(i);
                 }
 
                 return pagesArray;
             }
-        },
+
+    },
         methods : {
             onChange(event) {
             //console.log(event.target.value);
@@ -439,14 +435,29 @@
                     console.log(error);
                 })
             },
-            cambiarPagina(page,buscar,criterio){
+            cambiarPagina(page) {
+                if (page < 1 || page > this.pagination.last_page) return;
+
                 let me = this;
-                //Actualiza la pagina actual
-                me.pagination.current_page = page;
-                //envia peticion para ver los valores asociados a esa pagina
-                me.listarVinculacion(page,buscar,criterio);
-                this.listarVinculacionInactiva(page,buscar,criterio);
+
+                axios.get(`/vinculacion?page=${page}&buscar=${me.buscar}&criterio=${me.criterio}`)
+                    .then(response => {
+                        me.arrayVinculaciones = response.data.vinculaciones.data;
+                        me.pagination = response.data.pagination;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+
+                axios.get(`/vinculacioninactiva?page=${page}&buscar=${me.buscar}&criterio=${me.criterio}`)
+                    .then(response => {
+                        me.arrayVinculacionesInactivas = response.data.vinculaciones.data;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
             },
+
             indexChange: function(args) {
                 let newIndex = args.value
                 console.log('Current tab index: ' + newIndex)
@@ -489,20 +500,25 @@
                     console.log(error);
                 });
             },
-            formatMoney(event) {
+            //moneda combertida a colombia
+            formatMoney(event) {     
                 let value = event.target.value.replace(/\D/g, ""); 
                 if (value.length > 9) { 
-                    value = value.slice(0, 9);
-                }
-                if (value !== "") {
-                    value = parseInt(value).toLocaleString('es-CO', {
-                    style: 'currency',
-                    currency: 'COP',
-                    minimumFractionDigits: 0
-                    });
-                }
-                event.target.value = value;
-                this.salarioBasicoMensual = value;
+            value = value.slice(0, 9);
+            }
+            this.salarioBasicoMensual = parseInt(value) || 0; // Guardamos como número
+            this.salarioFormateado = this.salarioBasicoMensual.toLocaleString('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+            minimumFractionDigits: 0
+        });
+        },
+            parseToNumber() {
+            this.salarioFormateado = new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0
+            }).format(this.salarioBasicoMensual);
             },
                 validarFecha() {
                     const fecha = moment(this.fechaInicio, 'YYYY-MM-DD', true);
@@ -531,89 +547,82 @@
                     console.log(error);
                 });
             },
-            desactivarVinculacion(id){
-                this.fechaFin= moment().format('YYYY-MM-DD');
+            desactivarVinculacion(id) {
+    let me = this;  // Definir me para evitar problemas de contexto
+    me.fechaFin = moment().format('YYYY-MM-DD');
 
-                const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-danger'
-                },
-                buttonsStyling: false
-                })
+    const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: 'btn btn-success',
+            cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false
+    });
 
-                swalWithBootstrapButtons.fire({
-                title: 'Está seguro?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Desactivar!',
-                cancelButtonText: 'Cancelar',
-                reverseButtons: true
-                }).then((result) => {
-                if (result.value) {
-                    let me=this;
-                    axios.put('/vinculacion/deactivate',{
-                        'id': id,
-                        'fechaFin': fechaFin
-                    }).then(function (response) {
-                    me.listarVinculacion(1,'','vinculacion');
-                    this.listarVinculacionInactiva(1,'','');
-                    swalWithBootstrapButtons.fire(
-                    'Vinculacion desactivada!'
-                    )
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
-                } else if (
-                    /* Read more about handling dismissals below */
-                    result.dismiss === Swal.DismissReason.cancel
-                ) {
-                    me.listarVinculacion();
-                    this.listarVinculacionInactiva(1,'','');
-                }
-                })
-            },
-            activarVinculacion(id){
-                this.fechaInicio= moment().format('YYYY-MM-DD');
+    swalWithBootstrapButtons.fire({
+        title: '¿Está seguro?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Desactivar!',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.value) {
+            axios.put('/vinculacion/deactivate', {
+                'id': id,
+                'fechaFin': me.fechaFin  // Usar me.fechaFin en la petición
+            }).then(function (response) {
+                me.listarVinculacion(1, '', 'vinculacion');  // Actualizar lista de activos
+                me.listarVinculacionInactiva(1, '', '');  // Actualizar lista de inactivos
+                swalWithBootstrapButtons.fire('¡Vinculación desactivada!');
+            }).catch(function (error) {
+                console.log(error);
+            });
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            me.listarVinculacion(1, '', 'vinculacion');  
+            me.listarVinculacionInactiva(1, '', '');  
+        }
+    });
+},
 
-                const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-danger'
-                },
-                buttonsStyling: false
-                })
+activarVinculacion(id) {
+    let me = this;  // Definir me para evitar problemas de contexto
+    me.fechaInicio = moment().format('YYYY-MM-DD');  // Definir fechaInicio correctamente
 
-                swalWithBootstrapButtons.fire({
-                title: 'Quiere activar este registro?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Activar!',
-                cancelButtonText: 'Cancelar',
-                reverseButtons: true
-                }).then((result) => {
-                if (result.value) {
-                    let me=this;
-                    axios.put('/vinculacion/activate',{
-                        'id': id
-                    }).then(function (response) {
-                    me.listarVinculacion(1,'','vinculacion');
-                    this.listarVinculacionInactiva(1,'','');
-                    swalWithBootstrapButtons.fire(
-                    'Vinculacion activada!'
-                    )
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
-                } else if (
-                    /* Read more about handling dismissals below */
-                    result.dismiss === Swal.DismissReason.cancel
-                ) {
-                    me.listarVinculacion();
-                    this.listarVinculacionInactiva(1,'','');
-                }
-                })
-            },
+    const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: 'btn btn-success',
+            cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false
+    });
+
+    swalWithBootstrapButtons.fire({
+        title: '¿Quiere activar este registro?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Activar!',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.value) {
+            axios.put('/vinculacion/activate', {
+                'id': id,
+                'fechaInicio': me.fechaInicio  // Ahora enviamos fechaInicio
+            }).then(function (response) {
+                me.listarVinculacion(1, '', 'vinculacion');  // Actualizar lista de activos
+                me.listarVinculacionInactiva(1, '', '');  // Actualizar lista de inactivos
+                swalWithBootstrapButtons.fire('¡Vinculación activada!');
+            }).catch(function (error) {
+                console.log(error);
+            });
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            me.listarVinculacion(1, '', 'vinculacion');
+            me.listarVinculacionInactiva(1, '', '');
+        }
+    });
+},
+
             validarVinculacion(){
                 this.errorVinculacion=0;
                 this.errorMensaje=[];

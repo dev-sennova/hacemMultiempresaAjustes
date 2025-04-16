@@ -49,13 +49,13 @@
                                 <tbody>
                                     <tr v-for="precio in arrayPrecios" :key="precio.id">
                                         <td v-text="precio.detalle"></td>
-                                        <td v-text="precio.utilidadbruta"></td>
-                                        <td v-text="precio.utilidadoperacional"></td>
-                                        <td v-text="precio.utilidadneta"></td>
-                                        <td v-text="precio.ingresostotales"></td>
-                                        <td>{{precio.margenbruto}} %</td>
-                                        <td>{{precio.margenoperacional}} %</td>
-                                        <td>{{precio.margenneto}} %</td>
+                                        <td>{{ formatoMoneda(precio.utilidadbruta) }}</td>
+                                        <td>{{ formatoMoneda(precio.utilidadoperacional) }}</td>
+                                        <td>{{ formatoMoneda(precio.utilidadneta) }}</td>
+                                        <td>{{ formatoMoneda(precio.ingresostotales) }}</td>
+                                        <td>{{ precio.margenbruto }} %</td>
+                                        <td>{{ precio.margenoperacional }} %</td>
+                                        <td>{{ precio.margenneto }} %</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -88,34 +88,62 @@
                     <div class="card">
                         <div class="card-body">
 
-                                    <div class="form-group row">
-                                        <label class="col-md-3 form-control-label" for="text-input">Ingresos totales</label>
-                                        <div class="col-md-9">
-                                            <input type="text" v-model="ingresostotales" class="form-control" placeholder="Ingresos totales">
-                                            <span class="help-block">(*) Ingrese el valor de los ingresos totales</span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-md-3 form-control-label" for="text-input">Utilidad bruta</label>
-                                        <div class="col-md-9">
-                                            <input type="text" v-model="utilidadbruta" class="form-control" placeholder="Utilidad bruta">
-                                            <span class="help-block">(*) Ingrese el valor de la Utilidad bruta</span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-md-3 form-control-label" for="text-input">Utilidad operacional</label>
-                                        <div class="col-md-9">
-                                            <input type="text" v-model="utilidadoperacional" class="form-control" placeholder="Utilidad operacional">
-                                            <span class="help-block">(*) Ingrese el valor de la Utilidad operacional</span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-md-3 form-control-label" for="text-input">Utilidad neta</label>
-                                        <div class="col-md-9">
-                                            <input type="text" v-model="utilidadneta" class="form-control" placeholder="Utilidad neta">
-                                            <span class="help-block">(*) Ingrese el valor de la Utilidad neta</span>
-                                        </div>
-                                    </div>
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label">Ingresos totales</label>
+                                <div class="col-md-9">
+                                    <input
+                                        type="text"
+                                        :value="formatoMoneda(ingresostotales)"
+                                        @input="actualizarMoneda($event, 'ingresostotales')"
+                                        class="form-control"
+                                        placeholder="Ingresos totales"
+                                    />
+                                    <span class="help-block">(*) Ingrese el valor de los ingresos totales</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label">Utilidad bruta</label>
+                                <div class="col-md-9">
+                                    <input
+                                        type="text"
+                                        :value="formatoMoneda(utilidadbruta)"
+                                        @input="actualizarMoneda($event, 'utilidadbruta')"
+                                        class="form-control"
+                                        placeholder="Utilidad bruta"
+                                    />
+                                    <span class="help-block">(*) Ingrese el valor de la Utilidad bruta</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label">Utilidad operacional</label>
+                                <div class="col-md-9">
+                                    <input
+                                        type="text"
+                                        :value="formatoMoneda(utilidadoperacional)"
+                                        @input="actualizarMoneda($event, 'utilidadoperacional')"
+                                        class="form-control"
+                                        placeholder="Utilidad operacional"
+                                    />
+                                    <span class="help-block">(*) Ingrese el valor de la Utilidad operacional</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label">Utilidad neta</label>
+                                <div class="col-md-9">
+                                    <input
+                                        type="text"
+                                        :value="formatoMoneda(utilidadneta)"
+                                        @input="actualizarMoneda($event, 'utilidadneta')"
+                                        class="form-control"
+                                        placeholder="Utilidad neta"
+                                    />
+                                    <span class="help-block">(*) Ingrese el valor de la Utilidad neta</span>
+                                </div>
+                            </div>
+
 
                                     <div class="form-group row"><!--Deberia multiplicarlo por 100--->
                                         <label for="puntoequilibriopesos">Margen bruto: {{ parseFloat(100*utilidadbruta/ingresostotales).toFixed(2) }} %</label>
@@ -157,6 +185,7 @@
                 idProducto:0,
                 flag: 0,
                 utilidadbruta:0,
+                cambiarMoneda: "",
                 utilidadoperacional:0,
                 utilidadneta:0,
                 patrimoniototal:0,
@@ -240,6 +269,20 @@
                     console.log(error);
                 })
             },
+            formatoMoneda(valor) {
+                if (!valor) return '$0';
+                return new Intl.NumberFormat('es-CO', {
+                    style: 'currency',
+                    currency: 'COP',
+                    minimumFractionDigits: 0
+                }).format(valor);
+            },
+            actualizarMoneda(event, campo) {
+                let valorLimpio = event.target.value.replace(/\D/g, '');
+                this[campo] = parseInt(valorLimpio) || 0;
+                event.target.value = this.formatoMoneda(this[campo]);
+            },
+
             cambiarPagina(page){
                 let me = this;
                 //Actualiza la pagina actual

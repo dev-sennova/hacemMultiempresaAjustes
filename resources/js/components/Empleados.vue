@@ -255,34 +255,45 @@
                                             <input type="text" v-model="documento" class="form-control" placeholder="Documento de Identificación" @input="soloNumeros">
                                         </div>
                                     </div>
-                                    <div class="form-group row">
-                                        <label class="col-md-3 form-control-label" for="text-input">Area</label>
-                                        <div class="col-md-9">
-                                            <select class="form-control" v-model="idArea" @change='selectRelacion(area.idArea)'>
+                                   <!-- ÁREA -->
+                                            <div class="form-group row">
+                                                <label class="col-md-3 form-control-label">Área</label>
+                                                <div class="col-md-9">
+                                                    <select class="form-control" v-model="idArea" @change="selectRelacion(idArea)">
                                                 <option value="0" disabled>Seleccione un área</option>
-                                                <option v-for="area in arrayArea" :key="area.idArea" :value="area.idArea" v-text="area.area"></option>
+                                                <option v-for="area in arrayArea" :key="area.idArea" :value="area.idArea">
+                                                    {{ area.area }}
+                                                </option>
                                             </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-md-3 form-control-label" for="text-input">Proceso</label>
-                                        <div class="col-md-9">
-                                            <select class="form-control" v-model="idProceso" @change='selectRelacionPerfil(relacion.idProceso)'>
-                                                <option value="0" disabled>Seleccione un proceso</option>
-                                                <option v-for="relacion in arrayRelacion" :key="relacion.idProceso" :value="relacion.idProceso" v-text="relacion.proceso"></option>
-                                            </select>
-                                        </div>
-                                    </div>
+                                                </div>
+                                            </div>
 
-                                    <div class="form-group row">
-                                        <label class="col-md-3 form-control-label" for="text-input">Perfil</label>
-                                        <div class="col-md-9">
-                                            <select class="form-control" v-model="idPerfil">
-                                                <option value="0" disabled>Seleccione un perfil</option>
-                                                <option v-for="perfilrelacion in arrayPerfilRelacion" :key="perfilrelacion.idPerfil" :value="perfilrelacion.idPerfil" v-text="perfilrelacion.perfil"></option>
+                                            <!-- PROCESO -->
+                                            <div class="form-group row">
+                                                <label class="col-md-3 form-control-label">Proceso</label>
+                                                <div class="col-md-9">
+                                                    <select class="form-control" v-model="idProceso" @change="selectRelacionPerfil(idProceso)" :disabled="idArea == 0">
+                                                <option value="0" disabled>Seleccione un proceso</option>
+                                                <option v-for="relacion in arrayRelacion" :key="relacion.idProceso" :value="relacion.idProceso">
+                                                    {{ relacion.proceso }}
+                                                </option>
                                             </select>
-                                        </div>
-                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- PERFIL -->
+                                            <div class="form-group row">
+                                                <label class="col-md-3 form-control-label">Perfil</label>
+                                                <div class="col-md-9">
+                                                    <select class="form-control" v-model="idPerfil" :disabled="idProceso == 0">
+                                                <option value="0" disabled>Seleccione un perfil</option>
+                                                <option v-for="perfilrelacion in arrayPerfilRelacion" :key="perfilrelacion.idPerfil" :value="perfilrelacion.idPerfil">
+                                                    {{ perfilrelacion.perfil }}
+                                                </option>
+                                            </select>
+                                                </div>
+                                            </div>
+
                                      <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Nombre</label>
                                         <div class="col-md-9">
@@ -363,10 +374,15 @@
                                             </select>
                                         </div>
                                     </div>
-                                     <div class="form-group row">
-                                        <label class="col-md-3 form-control-label" for="text-input">Tipo de Sangre</label>
+                                    <div class="form-group row">
+                                        <label class="col-md-3 form-control-label">Tipo de Sangre</label>
                                         <div class="col-md-9">
-                                            <input type="text" v-model="tipoSangre" class="form-control" placeholder="Tipo de sangre">
+                                            <select class="form-control" v-model="tipoSangre">
+                                                <option disabled value="">Seleccione un tipo de sangre</option>
+                                                <option v-for="tipo in tipoSangreOpciones" :key="tipo" :value="tipo">
+                                                    {{ tipo }}
+                                                </option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -404,6 +420,7 @@
                 idEmpleado:0,
                 id:'',
                 documento: 0,
+                tipoSangre: '',
                 listado: 1,
                 nombre:'',
                 apellido:'',
@@ -458,6 +475,19 @@
         computed:{
             isActived: function(){
                 return this.pagination.current_page;
+            },
+            //TIPO DE SANGRES
+            tipoSangreOpciones() {
+                return [
+                "A+",
+                "A-",
+                "B+",
+                "B-",
+                "AB+",
+                "AB-",
+                "O+",
+                "O-"
+                ];
             },
             //Calcula los elementos de la paginacion
             pagesNumber: function(){
@@ -647,29 +677,35 @@
                 })
             },
             selectRelacion(idArea){
-                let me=this;
-                var url='/perfil/selectRelacion/'+ this.idArea;
+                let me = this;
+                me.idProceso = 0; // Reinicia proceso
+                me.idPerfil = 0;  // Reinicia perfil
+                me.arrayRelacion = [];
+                me.arrayPerfilRelacion = [];
+
+                var url = '/perfil/selectRelacion/' + idArea;
                 axios.get(url).then(function (response) {
-                var respuesta=response.data;
-                me.arrayRelacion=respuesta.relaciones;
-                })
-                .catch(function (error) {
-                    // handle error
+                    var respuesta = response.data;
+                    me.arrayRelacion = respuesta.relaciones;
+                }).catch(function (error) {
                     console.log(error);
-                })
+                });
             },
+
             selectRelacionPerfil(idProceso){
-                let me=this;
-                var url='/empleado/selectRelacionPerfil/'+this.idProceso;
+                let me = this;
+                me.idPerfil = 0; // Reinicia perfil
+                me.arrayPerfilRelacion = [];
+
+                var url = '/empleado/selectRelacionPerfil/' + idProceso;
                 axios.get(url).then(function (response) {
-                var respuesta=response.data;
-                me.arrayPerfilRelacion=respuesta.perfilrelaciones;
-                })
-                .catch(function (error) {
-                    // handle error
+                    var respuesta = response.data;
+                    me.arrayPerfilRelacion = respuesta.perfilrelaciones;
+                }).catch(function (error) {
                     console.log(error);
-                })
+                });
             },
+
             selectEps(){
                 let me=this;
                 var url='/empleado/selectEps';

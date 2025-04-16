@@ -48,14 +48,15 @@
                                 <tbody>
 
                                     <tr v-for="precio in arrayPrecios" :key="precio.id">
-                                        <td v-text="precio.detalle"></td>
-                                        <td v-text="precio.activocorriente"></td>
-                                        <td v-text="precio.pasivocorriente"></td>
-                                        <td v-text="precio.razoncorriente"></td>
-                                        <td v-text="precio.capitaldetrabajo"></td>
-                                        <td v-text="precio.inventario"></td>
-                                        <td v-text="precio.pruebaacida"></td>
-                                    </tr>
+    <td>{{ precio.detalle }}</td>
+    <td>{{ formatoCOP(precio.activocorriente) }}</td>
+    <td>{{ formatoCOP(precio.pasivocorriente) }}</td>
+    <td>{{ parseFloat(precio.razoncorriente).toFixed(2) }}</td>
+    <td>{{ formatoCOP(precio.capitaldetrabajo) }}</td>
+    <td>{{ formatoCOP(precio.inventario) }}</td>
+    <td>{{ parseFloat(precio.pruebaacida).toFixed(3) }}</td>
+</tr>
+
                                 </tbody>
                             </table>
                             </div>
@@ -88,23 +89,40 @@
                         <div class="card-body">
 
                                     <div class="form-group row">
-                                        <label class="col-md-3 form-control-label" for="text-input">Activo corriente</label>
-                                        <div class="col-md-9">
-                                            <input type="text" v-model="activocorriente" class="form-control" placeholder="Costos fijos">
+                                        <label class="col-md-2 form-control-label" for="text-input">Activo corriente</label>
+                                        <div class="col-md-10">
+                                            <input
+                                                type="text"
+                                                :value="formatoCOP(activocorriente)"
+                                                @input="actualizarActivoCorriente($event.target.value)"
+                                                class="form-control"
+                                                placeholder="Costos fijos"
+                                                />
+
                                             <span class="help-block">(*) Ingrese el activo corriente</span>
                                         </div>
                                     </div>
 
                                     <div class="form-group row">
-                                        <label class="col-md-3 form-control-label" for="text-input">Pasivo corriente</label>
-                                        <div class="col-md-9">
-                                            <input type="text" v-model="pasivocorriente" class="form-control" placeholder="Gastos fijos">
+                                        <label class="col-md-2 form-control-label" for="text-input">Pasivo corriente</label>
+                                        <div class="col-md-10">
+                                            <input
+                                                type="text"
+                                                :value="formatoCOP(pasivocorriente)"
+                                                @input="actualizarPasivoCorriente($event.target.value)"
+                                                class="form-control"
+                                                placeholder="Gastos fijos"
+                                                />
+
                                             <span class="help-block">(*) Ingrese el pasivo corriente</span>
                                         </div>
                                     </div>
 
                                     <div class="form-group row">
-                                        <label for="puntoequilibriopesos">Razón Corriente: $ {{ parseFloat(parseInt(activocorriente)/parseInt(pasivocorriente)).toFixed(2)}}</label>
+                                        <label for="puntoequilibriopesos">
+                                            Razón Corriente: $ {{ parseFloat(parseInt(activocorriente)/parseInt(pasivocorriente)).toFixed(2) }}
+                                        </label>
+
                                     </div>
 
                         </div>
@@ -114,15 +132,23 @@
                     <vs-tab label="Capital de trabajo" icon="open_with" @click="colorx = '#FFA500'">
                     <div class="card">
                         <div class="card-body">
-                                    <div class="form-group row">
-                                        <label for="puntoequilibriopesos">Activo corriente: $ {{ parseInt(activocorriente) }}</label>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="puntoequilibriopesos">Pasivo Corriente: $ {{ parseInt(pasivocorriente) }}</label>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="puntoequilibriopesos">Capital de trabajo: $ {{ parseInt(activocorriente)-parseInt(pasivocorriente) }}</label>
-                                    </div>
+                            <div class="col-md-2 col-form-label">
+                            <label for="puntoequilibriopesos">
+                                Activo corriente: {{ formatoCOP(activocorriente) }}
+                            </label>
+                            </div>
+
+                            <div class="form-group row">
+                            <label for="puntoequilibriopesos">
+                                Pasivo Corriente: {{ formatoCOP(pasivocorriente) }}
+                            </label>
+                            </div>
+
+                            <div class="form-group row">
+                            <label for="puntoequilibriopesos">
+                                Capital de trabajo: {{ formatoCOP(activocorriente - pasivocorriente) }}
+                            </label>
+                            </div>
                         </div>
                     </div>
                     </vs-tab>
@@ -132,9 +158,15 @@
                         <div class="card-body">
 
                                     <div class="form-group row">
-                                        <label class="col-md-3 form-control-label" for="text-input">Inventario</label>
-                                        <div class="col-md-9">
-                                            <input type="text" v-model="inventario" class="form-control" placeholder="Gastos fijos">
+                                        <label class="col-md-2 form-control-label" for="text-input">Inventario</label>
+                                        <div class="col-md-10">
+                                            <input
+                                                type="text"
+                                                :value="formatoCOP(inventario)"
+                                                @input="actualizarInventario($event.target.value)"
+                                                class="form-control"
+                                                placeholder="Ingrese valor en COP"
+                                                />
                                             <span class="help-block">(*) Ingrese el valor del inventario</span>
                                         </div>
                                     </div>
@@ -252,9 +284,9 @@
                     'activocorriente': this.activocorriente,
                     'pasivocorriente': this.pasivocorriente,
                     'inventario': this.inventario
-                }).then(function (response) {
-                this.ocultarDetalle();
-                this.forceRerender();
+                }).then((response) => {
+                    this.ocultarDetalle();
+                    this.forceRerender();
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -304,7 +336,28 @@
                 if (this.errorMensaje.length) this.errorVinculacion=1;
 
                 return this.errorVinculacion;
-            }
+            },
+            formatoCOP(valor) {
+                if (!valor) return '$ 0';
+                return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0
+                }).format(valor);
+            },
+            actualizarActivoCorriente(valorFormateado) {
+                const limpio = valorFormateado.replace(/\D/g, '');
+                this.activocorriente = parseInt(limpio) || 0;
+            },
+            actualizarInventario(valorFormateado) {
+                // Remueve todo excepto números
+                const limpio = valorFormateado.replace(/\D/g, '');
+                this.inventario = parseInt(limpio) || 0;
+            },
+            actualizarPasivoCorriente(valorFormateado) {
+                const limpio = valorFormateado.replace(/\D/g, '');
+                this.pasivocorriente = parseInt(limpio) || 0;
+            },
         },
         mounted() {
             this.listarLiquidez(1);

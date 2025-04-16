@@ -45,9 +45,10 @@
 
                                     <tr v-for="precio in arrayPrecios" :key="precio.id">
                                         <td v-text="precio.detalle"></td>
-                                        <td v-text="precio.preciodeventa"></td>
-                                        <td v-text="precio.puntodeequilibrio"></td>
+                                        <td>{{ formatearMoneda(precio.preciodeventa) }}</td>
+                                        <td>{{ parseFloat(precio.puntodeequilibrio).toFixed(2) }}</td>
                                     </tr>
+
                                 </tbody>
                             </table>
                             </div>
@@ -92,15 +93,27 @@
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Costos fijos</label>
                                         <div class="col-md-9">
-                                            <input type="text" v-model="costosfijos" class="form-control" placeholder="Costos fijos">
-                                            <span class="help-block">(*) Ingrese los costos fijos - (De hoja: {{this.valorcif}})</span>
+                                            <input 
+                                                type="text" 
+                                                v-model="costosfijosFormateado" 
+                                                @input="actualizarCostosFijos" 
+                                                class="form-control" 
+                                                placeholder="Costos fijos"
+                                                />
+                                            <span class="help-block">(*) Ingrese los costos fijos - (De hoja: {{ formatearMoneda(valorcif) }})</span>
                                         </div>
                                     </div>
 
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Gastos fijos</label>
                                         <div class="col-md-9">
-                                            <input type="text" v-model="gastosfijos" class="form-control" placeholder="Gastos fijos">
+                                            <input 
+                                                type="text" 
+                                                v-model="gastosfijosFormateado" 
+                                                @input="actualizarGastosFijos" 
+                                                class="form-control" 
+                                                placeholder="Gastos fijos"
+                                            />
                                             <span class="help-block">(*) Ingrese los gastos fijos</span>
                                         </div>
                                     </div>
@@ -108,7 +121,14 @@
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Valor materia prima</label>
                                         <div class="col-md-9">
-                                            <input type="text" v-model="materiaprima" class="form-control" placeholder="Materia prima">
+                                            <input 
+                                                type="text" 
+                                                v-model="materiaprimaFormateado" 
+                                                @input="actualizarMateriaPrima" 
+                                                class="form-control" 
+                                                placeholder="Materia prima"
+                                            />
+
                                             <span class="help-block">(*) Ingrese el valor de materia prima - (De hoja: {{this.valormatprima}})</span>
                                         </div>
                                     </div>
@@ -116,11 +136,16 @@
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Valor mano de obra</label>
                                         <div class="col-md-9">
-                                            <input type="text" v-model="manodeobradirecta" class="form-control" placeholder="Mano de obra directa">
-                                            <span class="help-block">(*) Ingrese el valor de mano de obra directa - (De hoja: {{this.valormanobra}})</span>
+                                            <input 
+                                                type="text" 
+                                                v-model="manodeobradirectaFormateado" 
+                                                @input="actualizarManoDeObra" 
+                                                class="form-control" 
+                                                placeholder="Mano de obra directa"
+                                            />
+                                            <span class="help-block">(*) Ingrese el valor de mano de obra directa - (De hoja: {{ formatearMoneda(valormanobra) }})</span>
                                         </div>
                                     </div>
-
                                     <div class="form-group row">
                                         <div class="col-md-6">
                                             <label for="puntoequilibriounidad">Punto de equilibrio: {{parseFloat((parseInt(costosfijos)+parseInt(gastosfijos))/
@@ -130,21 +155,22 @@
 
                                     <div class="form-group row">
                                         <div class="col-md-6">
-                                            <label for="puntoequilibriopesos">Costos + gastos: {{parseInt(costosfijos)+parseInt(gastosfijos)}}</label>
+                                            <label for="puntoequilibriopesos">Costos + gastos: {{ formatearMoneda(parseInt(costosfijos) + parseInt(gastosfijos)) }}</label>
                                         </div>
                                     </div>
 
                                     <div class="form-group row">
                                         <div class="col-md-6">
-                                            <label for="puntoequilibriopesos">Precio venta: {{parseInt(this.preciodeventa)}}</label>
+                                            <label for="puntoequilibriopesos">Precio venta: {{ formatearMoneda(parseInt(this.preciodeventa)) }}</label>
                                         </div>
                                     </div>
 
                                     <div class="form-group row">
                                         <div class="col-md-6">
-                                            <label for="puntoequilibriopesos">Costo unitario: {{ parseInt(materiaprima)+parseInt(manodeobradirecta)}}</label>
+                                            <label for="puntoequilibriopesos">Costo unitario: {{ formatearMoneda(parseInt(materiaprima) + parseInt(manodeobradirecta)) }}</label>
                                         </div>
                                     </div>
+
 
                                     <p v-show="condicion">
                                         <input type="text" v-model="idProducto">
@@ -193,6 +219,10 @@
                 costo:0,
                 porcentaje:0,
                 costosfijos:0,
+                costosfijosFormateado: "",
+                gastosfijosFormateado: "",
+                materiaprimaFormateado: "",
+                manodeobradirectaFormateado: "",
                 materiaprima:0,
                 manodeobradirecta:0,
                 gastosfijos:0,
@@ -251,31 +281,39 @@
         methods : {
             onChange(event) {
                 console.log(event.target.value);
-                this.identificadorHoja=event.target.value;
-                let me=this;
-                //var url='/hojadecosto/unitariogen/?identificador='+this.identificadorHoja;
-                var url='/simulaciones/unitariogen/?identificador='+this.identificadorHoja;
+                this.identificadorHoja = event.target.value;
+                let me = this;
+                var url = '/simulaciones/unitariogen/?identificador=' + this.identificadorHoja;
+
                 axios.get(url).then(function (response) {
-                var respuesta=response.data;
-                me.valorpar=respuesta.costopar;
-                me.costo=respuesta.costopar;
-                me.preciodeventa=respuesta.precioventa;
-                me.valorcif=respuesta.acumuladocift;
-                me.costosfijos=respuesta.acumuladocift;
-                me.valormatprima=respuesta.acumuladomp;
-                me.materiaprima=respuesta.acumuladomp;
-                me.valormanobra=respuesta.acumuladomo;
-                me.manodeobradirecta=respuesta.acumuladomo;
-                console.log(me.valorpar);
-                console.log(me.valorcif);
-                console.log(me.valormatprima);
-                console.log(me.valormanobra);
+                    var respuesta = response.data;
+                    me.valorpar = respuesta.costopar;
+                    me.costo = respuesta.costopar;
+                    me.preciodeventa = respuesta.precioventa;
+                    me.valorcif = respuesta.acumuladocift;
+                    me.costosfijos = respuesta.acumuladocift;
+                    me.valormatprima = respuesta.acumuladomp;
+                    me.materiaprima = respuesta.acumuladomp;
+                    me.valormanobra = respuesta.acumuladomo;
+                    me.manodeobradirecta = respuesta.acumuladomo;
+
+                    // Formatear costos fijos para que se vea en pesos colombianos
+                    me.costosfijosFormateado = me.formatearMoneda(me.costosfijos);
+                    me.materiaprimaFormateado = me.formatearMoneda(me.materiaprima);
+                    me.manodeobradirectaFormateado = me.formatearMoneda(me.manodeobradirecta);
+
+
+
+                    console.log(me.valorpar);
+                    console.log(me.valorcif);
+                    console.log(me.valormatprima);
+                    console.log(me.valormanobra);
                 })
                 .catch(function (error) {
-                    // handle error
                     console.log(error);
-                })
+                });
             },
+
             indexChange: function(args) {
                 let newIndex = args.value
                 console.log('Current tab index: ' + newIndex)
@@ -292,6 +330,38 @@
                 this.identificador=0;
                 this.listarPrecios(1);
             },
+            //formato para cambiar el formato de valor monenatrio para el usuario
+            formatearMoneda(valor) {
+                if (!valor) return "$0";  // Si el valor es null o undefined, mostrar $0
+                return new Intl.NumberFormat("es-CO", {
+                    style: "currency",
+                    currency: "COP",
+                    minimumFractionDigits: 0
+                }).format(valor);
+            },
+            actualizarCostosFijos() {
+                // Elimina caracteres no numéricos antes de actualizar la variable real
+                let valor = this.costosfijosFormateado.replace(/[^0-9]/g, ""); 
+                this.costosfijos = parseInt(valor) || 0;
+            },
+            actualizarGastosFijos() {
+                let valor = this.gastosfijosFormateado.replace(/[^0-9]/g, ""); 
+                this.gastosfijos = parseInt(valor) || 0;
+                this.gastosfijosFormateado = this.formatearMoneda(this.gastosfijos);
+            },
+            actualizarMateriaPrima() {
+                let valor = this.materiaprimaFormateado.replace(/[^0-9]/g, ""); 
+                this.materiaprima = parseInt(valor) || 0;
+                this.materiaprimaFormateado = this.formatearMoneda(this.materiaprima);
+                },
+                actualizarManoDeObra() {
+                    let valor = this.manodeobradirectaFormateado.replace(/[^0-9]/g, ""); 
+                    this.manodeobradirecta = parseInt(valor) || 0;
+                    this.manodeobradirectaFormateado = this.formatearMoneda(this.manodeobradirecta);
+                },
+
+            //fin 
+
             validarVinculacion(){
                 this.errorVinculacion=0;
                 this.errorMensaje=[];
@@ -301,29 +371,44 @@
 
                 return this.errorVinculacion;
             },
-            crearPuntoEquilibrio(){
-                //valido con el metodo de validacion creado
-                /*
-                if(this.validarManoDeObraProducto()){
+            crearPuntoEquilibrio() {
+                let me = this;
+
+                // Validación básica
+                if (!me.idProducto || me.preciodeventa <= 0 || me.costosfijos <= 0 || me.gastosfijos < 0 || me.materiaprima < 0 || me.manodeobradirecta < 0) {
+                    alert("Por favor complete todos los campos obligatorios con valores válidos.");
                     return;
                 }
-                */
 
-                axios.post('/simulaciones/storePuntoEquilibrio',{
-                    'idProducto': this.idProducto,
-                    'preciodeventa': this.preciodeventa,
-                    'costosfijos': this.costosfijos,
-                    'gastosfijos': this.gastosfijos,
-                    'materiaprima': this.materiaprima,
-                    'manodeobradirecta': this.manodeobradirecta
-                }).then(function (response) {
-                this.ocultarDetalle();
-                this.forceRerender();
+                // Validación lógica: punto de equilibrio debe ser positivo
+                const ingresoUnitario = parseInt(me.preciodeventa);
+                const costoUnitario = parseInt(me.materiaprima) + parseInt(me.manodeobradirecta);
+                const margen = ingresoUnitario - costoUnitario;
+
+                if (margen <= 0) {
+                    alert("El precio de venta debe ser mayor que la suma de los costos variables por unidad.");
+                    return;
+                }
+
+                // Enviar datos al servidor
+                axios.post('/simulaciones/storePuntoEquilibrio', {
+                    idProducto: me.idProducto,
+                    preciodeventa: me.preciodeventa,
+                    costosfijos: me.costosfijos,
+                    gastosfijos: me.gastosfijos,
+                    materiaprima: me.materiaprima,
+                    manodeobradirecta: me.manodeobradirecta
+                })
+                .then(function (response) {
+                    me.ocultarDetalle();
+                    me.forceRerender();
                 })
                 .catch(function (error) {
-                    console.log(error);
+                    console.log("Error al guardar punto de equilibrio:", error);
                 });
             },
+
+
             forceRerender() {
                 this.componentKey += 1;
                },
