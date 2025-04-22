@@ -22,7 +22,7 @@ class CreateTbRotacioninventarioTable extends Migration
             $table->integer('saldoperiodoanterior')->unsigned();
             $table->integer('costodeventas')->unsigned();
             $table->integer('sumasaldos')->unsigned();
-            $table->float('promediosaldos');
+            $table->decimal('promediosaldos',20,4);
             $table->float('rotacioninventario');
             $table->string('detalle', 255);
             $table->foreignId('idEmpresa')->constrained('tb_configuracion_basica');
