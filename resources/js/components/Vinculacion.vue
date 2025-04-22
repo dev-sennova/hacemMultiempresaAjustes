@@ -263,12 +263,12 @@
                                     <div class="form-group row" v-if="flag == 1">
                                         <label class="col-md-3 form-control-label" for="text-input">Salario Base</label>
                                         <div class="col-md-9">
-                                        <input 
-                                            type="text" 
-                                            v-model="salarioFormateado" 
-                                            class="form-control" 
-                                            placeholder="Ingrese el salario básico mensual" 
-                                            @input="formatMoney" 
+                                        <input
+                                            type="text"
+                                            v-model="salarioFormateado"
+                                            class="form-control"
+                                            placeholder="Ingrese el salario básico mensual"
+                                            @input="formatMoney"
                                             @blur="parseToNumber"
                                         />
                                         <span class="help-block">(*) Ingrese el salario básico mensual</span>
@@ -277,7 +277,7 @@
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Fecha de Inicio</label>
                                         <div class="col-md-9">
-                                            <input type="date" v-model="fechaInicio" class="form-control" 
+                                            <input type="date" v-model="fechaInicio" class="form-control"
                                             :max ="maxFecha" :min="minFecha"placeholder="Ingrese la fecha de inicio">
                                             <span class="help-block">(*) Ingrese fecha de inicio</span>
                                         </div>
@@ -501,9 +501,9 @@
                 });
             },
             //moneda combertida a colombia
-            formatMoney(event) {     
-                let value = event.target.value.replace(/\D/g, ""); 
-                if (value.length > 9) { 
+            formatMoney(event) {
+                let value = event.target.value.replace(/\D/g, "");
+                if (value.length > 9) {
             value = value.slice(0, 9);
             }
             this.salarioBasicoMensual = parseInt(value) || 0; // Guardamos como número
@@ -579,8 +579,8 @@
                 console.log(error);
             });
         } else if (result.dismiss === Swal.DismissReason.cancel) {
-            me.listarVinculacion(1, '', 'vinculacion');  
-            me.listarVinculacionInactiva(1, '', '');  
+            me.listarVinculacion(1, '', 'vinculacion');
+            me.listarVinculacionInactiva(1, '', '');
         }
     });
 },
