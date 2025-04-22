@@ -500,26 +500,6 @@
                     console.log(error);
                 });
             },
-            //moneda combertida a colombia
-            formatMoney(event) {
-                let value = event.target.value.replace(/\D/g, "");
-                if (value.length > 9) {
-            value = value.slice(0, 9);
-            }
-            this.salarioBasicoMensual = parseInt(value) || 0; // Guardamos como número
-            this.salarioFormateado = this.salarioBasicoMensual.toLocaleString('es-CO', {
-                style: 'currency',
-                currency: 'COP',
-            minimumFractionDigits: 0
-        });
-        },
-            parseToNumber() {
-            this.salarioFormateado = new Intl.NumberFormat('es-CO', {
-                style: 'currency',
-                currency: 'COP',
-                minimumFractionDigits: 0
-            }).format(this.salarioBasicoMensual);
-            },
                 validarFecha() {
                     const fecha = moment(this.fechaInicio, 'YYYY-MM-DD', true);
                     if (!fecha.isValid() || this.fechaInicio.length !== 10) {
@@ -548,16 +528,16 @@
                 });
             },
             desactivarVinculacion(id) {
-    let me = this;  // Definir me para evitar problemas de contexto
-    me.fechaFin = moment().format('YYYY-MM-DD');
+                let me = this;  // Definir me para evitar problemas de contexto
+                me.fechaFin = moment().format('YYYY-MM-DD');
 
-    const swalWithBootstrapButtons = Swal.mixin({
-        customClass: {
-            confirmButton: 'btn btn-success',
-            cancelButton: 'btn btn-danger'
-        },
-        buttonsStyling: false
-    });
+                const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: 'btn btn-success',
+                        cancelButton: 'btn btn-danger'
+                    },
+                    buttonsStyling: false
+                });
 
     swalWithBootstrapButtons.fire({
         title: '¿Está seguro?',
