@@ -3,7 +3,7 @@
                 <!-- Breadcrumb -->
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">Home</li>
-                    <li class="breadcrumb-item active">Punto de equilibrio multiproducto</li>
+                    <li class="breadcrumb-item active">Punto de equilibrio multiproducto  </li>
                 </ol>
 
                 <template v-if="listado==0">
