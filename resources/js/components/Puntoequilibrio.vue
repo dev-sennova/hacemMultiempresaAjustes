@@ -17,7 +17,7 @@
                                 <i class="icon-plus"></i>&nbsp;Nuevo
                             </button>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body" >
                             <!--
                             <div class="form-group row">
                                 <div class="col-md-9">
@@ -37,7 +37,7 @@
                                 <thead>
                                     <tr>
                                         <th>Detalle</th>
-                                        <th>Precio de venta</th>   
+                                        <th>Precio de venta</th>
                                         <th>Punto de equilibrio</th>
                                     </tr>
                                 </thead>
@@ -93,11 +93,11 @@
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Costos fijos</label>
                                         <div class="col-md-9">
-                                            <input 
-                                                type="text" 
-                                                v-model="costosfijosFormateado" 
-                                                @input="actualizarCostosFijos" 
-                                                class="form-control" 
+                                            <input
+                                                type="text"
+                                                v-model="costosfijosFormateado"
+                                                @input="actualizarCostosFijos"
+                                                class="form-control"
                                                 placeholder="Costos fijos"
                                                 />
                                             <span class="help-block">(*) Ingrese los costos fijos - (De hoja: {{ formatearMoneda(valorcif) }})</span>
@@ -107,11 +107,11 @@
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Gastos fijos</label>
                                         <div class="col-md-9">
-                                            <input 
-                                                type="text" 
-                                                v-model="gastosfijosFormateado" 
-                                                @input="actualizarGastosFijos" 
-                                                class="form-control" 
+                                            <input
+                                                type="text"
+                                                v-model="gastosfijosFormateado"
+                                                @input="actualizarGastosFijos"
+                                                class="form-control"
                                                 placeholder="Gastos fijos"
                                             />
                                             <span class="help-block">(*) Ingrese los gastos fijos</span>
@@ -121,11 +121,11 @@
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Valor materia prima</label>
                                         <div class="col-md-9">
-                                            <input 
-                                                type="text" 
-                                                v-model="materiaprimaFormateado" 
-                                                @input="actualizarMateriaPrima" 
-                                                class="form-control" 
+                                            <input
+                                                type="text"
+                                                v-model="materiaprimaFormateado"
+                                                @input="actualizarMateriaPrima"
+                                                class="form-control"
                                                 placeholder="Materia prima"
                                             />
 
@@ -136,11 +136,11 @@
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label" for="text-input">Valor mano de obra</label>
                                         <div class="col-md-9">
-                                            <input 
-                                                type="text" 
-                                                v-model="manodeobradirectaFormateado" 
-                                                @input="actualizarManoDeObra" 
-                                                class="form-control" 
+                                            <input
+                                                type="text"
+                                                v-model="manodeobradirectaFormateado"
+                                                @input="actualizarManoDeObra"
+                                                class="form-control"
                                                 placeholder="Mano de obra directa"
                                             />
                                             <span class="help-block">(*) Ingrese el valor de mano de obra directa - (De hoja: {{ formatearMoneda(valormanobra) }})</span>
@@ -341,26 +341,26 @@
             },
             actualizarCostosFijos() {
                 // Elimina caracteres no numéricos antes de actualizar la variable real
-                let valor = this.costosfijosFormateado.replace(/[^0-9]/g, ""); 
+                let valor = this.costosfijosFormateado.replace(/[^0-9]/g, "");
                 this.costosfijos = parseInt(valor) || 0;
             },
             actualizarGastosFijos() {
-                let valor = this.gastosfijosFormateado.replace(/[^0-9]/g, ""); 
+                let valor = this.gastosfijosFormateado.replace(/[^0-9]/g, "");
                 this.gastosfijos = parseInt(valor) || 0;
                 this.gastosfijosFormateado = this.formatearMoneda(this.gastosfijos);
             },
             actualizarMateriaPrima() {
-                let valor = this.materiaprimaFormateado.replace(/[^0-9]/g, ""); 
+                let valor = this.materiaprimaFormateado.replace(/[^0-9]/g, "");
                 this.materiaprima = parseInt(valor) || 0;
                 this.materiaprimaFormateado = this.formatearMoneda(this.materiaprima);
                 },
                 actualizarManoDeObra() {
-                    let valor = this.manodeobradirectaFormateado.replace(/[^0-9]/g, ""); 
+                    let valor = this.manodeobradirectaFormateado.replace(/[^0-9]/g, "");
                     this.manodeobradirecta = parseInt(valor) || 0;
                     this.manodeobradirectaFormateado = this.formatearMoneda(this.manodeobradirecta);
                 },
 
-            //fin 
+            //fin
 
             validarVinculacion(){
                 this.errorVinculacion=0;
@@ -424,14 +424,14 @@
                     // handle error
                     console.log(error);
                 })
-            },       
+            },
             cambiarPagina(page){
                 let me = this;
                 //Actualiza la pagina actual
                 me.pagination.current_page = page;
                 //envia peticion para ver los valores asociados a esa pagina
                 me.listarPrecios(page);
-            },    
+            },
             listarPosibles(id){
                 let me=this;
                 //var url='/relaf/posibles?id=' + this.identificador;
