@@ -37,11 +37,11 @@
                                 <thead>
                                     <tr>
                                         <th>Detalle</th>
-                                        <th>Activo corriente</th>   
+                                        <th>Activo corriente </th>
                                         <th>Pasivo corriente</th>
-                                        <th>Razón corriente</th>   
+                                        <th>Razón corriente</th>
                                         <th>Capital de trabajo</th>
-                                        <th>Inventario</th>   
+                                        <th>Inventario</th>
                                         <th>Prueba ácida</th>
                                     </tr>
                                 </thead>
@@ -304,14 +304,14 @@
                     // handle error
                     console.log(error);
                 })
-            }, 
+            },
             cambiarPagina(page){
                 let me = this;
                 //Actualiza la pagina actual
                 me.pagination.current_page = page;
                 //envia peticion para ver los valores asociados a esa pagina
                 me.listarLiquidez(page);
-            },   
+            },
             indexChange: function(args) {
                 let newIndex = args.value
                 console.log('Current tab index: ' + newIndex)
