@@ -40,7 +40,7 @@
                             <table class="table table-bordered table-striped table-sm">
                                 <thead>
                                     <tr>
-                                        <th>Opciones</th>
+                                        <th>Opciones </th>
                                         <th>Documento</th>
                                         <th>Nombre</th>
                                         <th>Apellido</th>
@@ -61,7 +61,7 @@
 
                                             <button type="button" @click="abrirModal('empleado','actualizar',empleado)" class="btn btn-info btn-sm">
                                             <i class="icon-pencil" style="color: white;"></i>
-                                            </button> 
+                                            </button>
 
                                         <template v-if="empleado.estado">
                                             <button type="button" class="btn custom-button btn-sm" @click="desactivarEmpleado(empleado.id)">
@@ -998,7 +998,7 @@
         font-weight: bold;
     }
     .custom-button {
-        background-color: #ff9900; 
-        color: #ffffff; 
+        background-color: #ff9900;
+        color: #ffffff;
     }
 </style>
