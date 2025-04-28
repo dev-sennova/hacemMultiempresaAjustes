@@ -37,7 +37,7 @@
                                 <thead>
                                     <tr>
                                         <th>Detalle</th>
-                                        <th>Utilidad bruta</th>
+                                        <th>Utilidad bruta </th>
                                         <th>Utilidad operacional</th>
                                         <th>Utilidad neta</th>
                                         <th>Ingresos totales</th>
