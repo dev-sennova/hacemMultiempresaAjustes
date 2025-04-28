@@ -37,7 +37,7 @@
                                 <thead>
                                     <tr>
                                         <th>Detalle</th>
-                                        <th>Activo total</th>
+                                        <th>Activo total </th>
                                         <th>Pasivo total</th>
                                         <th>Pasivo corriente</th>
                                         <th>Patrimonio total</th>
