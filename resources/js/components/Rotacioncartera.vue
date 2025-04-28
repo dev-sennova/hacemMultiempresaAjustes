@@ -36,7 +36,7 @@
                             <table class="table table-bordered table-striped table-sm">
                                 <thead>
                                     <tr>
-                                        <th>Detalle</th>
+                                        <th>Detalle </th>
                                         <th>Fecha inicial</th>
                                         <th>Fecha final</th>
                                         <th>Saldo periodo actual</th>
